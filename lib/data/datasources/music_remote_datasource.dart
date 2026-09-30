@@ -1,14 +1,18 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:titan_tunes/config/service/app_endpoint.dart';
 import 'package:titan_tunes/config/service/connectivity_service.dart';
 import 'package:titan_tunes/core/exceptions.dart/exceptions.dart';
 import 'package:titan_tunes/data/models/album_model.dart';
 import 'package:titan_tunes/data/models/song_model.dart';
 
+/// ⭐ Nombre d'albums récents à verrouiller
+const int kLockedAlbumsCount = 2;
+
 abstract class MusicRemoteDataSource {
   Future<List<AlbumModel>> getAllAlbums();
   Future<List<SongModel>> getAllSongs();
- // Future<List<SongModel>> getSongsByArtist(String artistId);
+  Future<List<SongModel>> getSongsByAlbum(String albumId);
 }
 
 class MusicRemoteDataSourceImpl implements MusicRemoteDataSource {
@@ -23,49 +27,44 @@ class MusicRemoteDataSourceImpl implements MusicRemoteDataSource {
 
   @override
   Future<List<AlbumModel>> getAllAlbums() async {
-    return _getList<AlbumModel>(
+    final list = await _getList<AlbumModel>(
       path: AppEndpoint.allAlbums,
       parser: (json) => AlbumModel.fromJson(json),
     );
+
+    // ⭐ Marque les N premiers albums comme "nouveaux" (verrouillés)
+    // Le backend peut aussi envoyer isNew / isVip directement
+    return list.asMap().entries.map((entry) {
+      final index = entry.key;
+      final album = entry.value;
+
+      // Déjà marqué par le backend ?
+      if (album.isVip || album.isNew) return album;
+
+      // Sinon, on considère les N premiers comme nouveaux
+      if (index < kLockedAlbumsCount) {
+        return album.copyWith(isNew: true);
+      }
+      return album;
+    }).toList();
   }
 
-  //pour récupérer les chansons d'un artiste spécifique
-/*@override
-Future<List<SongModel>> getSongsByArtist(String artistId) async {
-  if (!await _connectivity.hasConnection()) {
-    throw const NetworkException();
-  }
-
-  try {
-    final response = await _dio.get(AppEndpoint.songsByArtist(artistId));
-    final data = response.data;
-    final List<dynamic> list = data is List
-        ? data
-        : (data is Map && data['data'] is List)
-            ? data['data'] as List
-            : [];
-
-    return list
-        .whereType<Map<String, dynamic>>()
-        .map(SongModel.fromJson)
-        .toList();
-  } on DioException catch (e) {
-    throw ServerException(
-      message: 'Erreur (${e.response?.statusCode})',
-      statusCode: e.response?.statusCode,
-    );
-  }
-}
-*/
   @override
-  Future<List<SongModel>> getAllSongs() async {
+  Future<List<SongModel>> getAllSongs() {
     return _getList<SongModel>(
       path: AppEndpoint.allSongs,
       parser: (json) => SongModel.fromJson(json),
     );
   }
 
-  /// Méthode générique pour éviter la duplication
+  @override
+  Future<List<SongModel>> getSongsByAlbum(String albumId) {
+    return _getList<SongModel>(
+      path: AppEndpoint.songsByAlbum(albumId),
+      parser: (json) => SongModel.fromJson(json),
+    );
+  }
+
   Future<List<T>> _getList<T>({
     required String path,
     required T Function(Map<String, dynamic>) parser,
@@ -75,10 +74,10 @@ Future<List<SongModel>> getSongsByArtist(String artistId) async {
     }
 
     try {
+      debugPrint('🌐 GET $path');
       final response = await _dio.get(path);
       final data = response.data;
 
-      // Le backend peut renvoyer soit une List directe, soit { data: [...] }
       List<dynamic> rawList;
       if (data is List) {
         rawList = data;
@@ -88,15 +87,20 @@ Future<List<SongModel>> getSongsByArtist(String artistId) async {
         throw const ParsingException();
       }
 
-      return rawList
+      final result = rawList
           .whereType<Map<String, dynamic>>()
           .map(parser)
           .toList();
+
+      debugPrint('✅ $path → ${result.length} items');
+      return result;
     } on DioException catch (e) {
+      debugPrint('❌ $path : ${e.response?.statusCode}');
       throw _handleDioError(e);
     } on FormatException {
       throw const ParsingException();
-    } catch (_) {
+    } catch (e) {
+      debugPrint('❌ Parse error: $e');
       throw const ServerException(message: 'Erreur de chargement');
     }
   }

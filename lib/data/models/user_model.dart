@@ -18,7 +18,7 @@ class UserModel {
   /// Construit un UserModel depuis la réponse JSON
   factory UserModel.fromJson(Map<String, dynamic> json) {
   return UserModel(
-    // ⭐ Lit 'trackingId' en priorité (c'est ce que ton backend renvoie)
+    //  Lit 'trackingId' en priorité (c'est ce que ton backend renvoie)
     id: (json['trackingId'] ?? json['id'] ?? json['_id'] ?? '').toString(),
     email: json['email'] as String? ?? '',
     username: json['firstName'] != null

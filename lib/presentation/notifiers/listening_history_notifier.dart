@@ -5,7 +5,7 @@ import 'package:titan_tunes/domaine/entities/song_entity.dart';
 
 // ═══════════════════════════════════════════════════════════════
 // ENTITÉ
-// ═══════════════════════════════════════════════════════════════
+
 class ListeningHistoryEntity {
   final String songId;
   final String songTitle;
@@ -40,9 +40,9 @@ class ListeningHistoryEntity {
       );
 }
 
-// ═══════════════════════════════════════════════════════════════
+
 // ÉTAT
-// ═══════════════════════════════════════════════════════════════
+
 class ListeningHistoryState {
   final List<ListeningHistoryEntity> items;
   final bool isLoading;
@@ -53,9 +53,9 @@ class ListeningHistoryState {
   });
 }
 
-// ═══════════════════════════════════════════════════════════════
+
 // NOTIFIER
-// ═══════════════════════════════════════════════════════════════
+
 class ListeningHistoryNotifier extends Notifier<ListeningHistoryState> {
   static const _key = 'listening_history';
   static const _maxItems = 100;
@@ -121,9 +121,9 @@ class ListeningHistoryNotifier extends Notifier<ListeningHistoryState> {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════
+
 // PROVIDER   C'est CE nom qui doit exister
-// ═══════════════════════════════════════════════════════════════
+
 final listeningHistoryProvider =
     NotifierProvider<ListeningHistoryNotifier, ListeningHistoryState>(
   () => ListeningHistoryNotifier(),

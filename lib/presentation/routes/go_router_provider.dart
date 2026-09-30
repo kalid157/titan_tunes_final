@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:titan_tunes/domaine/entities/playlist_entity.dart';
 import 'package:titan_tunes/presentation/views/auth/auth_options.dart';
 import 'package:titan_tunes/presentation/views/auth/register.dart';
 import 'package:titan_tunes/presentation/views/auth/sign_in.dart';
@@ -9,6 +10,8 @@ import 'package:titan_tunes/presentation/views/home/get_started.dart';
 import 'package:titan_tunes/presentation/views/home/home_page.dart';
 import 'package:titan_tunes/presentation/views/home/lyrics_page.dart';
 import 'package:titan_tunes/presentation/views/home/music_page.dart';
+import 'package:titan_tunes/presentation/views/music/create_playlist_page.dart';
+import 'package:titan_tunes/presentation/views/music/playlist_detail_page.dart';
 import 'package:titan_tunes/presentation/views/music/playlists_page.dart';
 import 'package:titan_tunes/presentation/views/profile/favorites_page.dart';
 import 'package:titan_tunes/presentation/views/profile/listening_history_page.dart';
@@ -120,6 +123,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           name: 'notifications',
           builder: (context, state) => const NotificationsPage(),
         ),
+        GoRoute(
+  path: '/create_playlist',
+  name: 'createPlaylist',
+  builder: (context, state) => const CreatePlaylistPage(),
+),
+GoRoute(
+  path: '/playlist_detail',
+  name: 'playlistDetail',
+  builder: (context, state) {
+    final playlist = state.extra as PlaylistEntity;
+    return PlaylistDetailPage(playlist: playlist);
+  },
+),
 
         GoRoute(
           path: '/playlists_page',

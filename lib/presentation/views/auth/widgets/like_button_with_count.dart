@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-// ⭐ Import du notifier (source unique pour favoriteNotifierProvider)
+//  Import du notifier (source unique pour favoriteNotifierProvider)
 import 'package:titan_tunes/presentation/notifiers/favorite_notifier.dart';
 import 'package:titan_tunes/presentation/notifiers/like_count_notifier.dart';
 import 'package:titan_tunes/provider/auth_provider.dart';

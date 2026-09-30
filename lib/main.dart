@@ -28,11 +28,57 @@ Future<void> main() async {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp>with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    // ⭐ Enregistre l'observer pour tracker lifecycle
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    switch (state) {
+      case AppLifecycleState.resumed:
+        debugPrint('📱 App resumed — OK');
+        // ⭐ Rien à faire : Riverpod garde son état
+        break;
+
+      case AppLifecycleState.inactive:
+        debugPrint('📱 App inactive');
+        break;
+
+      case AppLifecycleState.paused:
+        debugPrint('📱 App paused — musique peut continuer');
+        break;
+
+      case AppLifecycleState.detached:
+        debugPrint('📱 App detached');
+        break;
+
+      case AppLifecycleState.hidden:
+        debugPrint('📱 App hidden');
+        break;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final router = ref.watch(goRouterProvider);
     final themeMode = ref.watch(themeModeProvider);
 

@@ -1,9 +1,11 @@
-/// Modèle Song — reflète le JSON de GET /song/getAll
 class SongModel {
   final String trackingId;
   final String titre;
   final String audio;
   final String artiste;
+  final String? artisteTrackingId;
+  final String? albumTrackingId;
+  final String? categorieTrackingId;
   final bool isVip;
 
   const SongModel({
@@ -11,6 +13,9 @@ class SongModel {
     required this.titre,
     required this.audio,
     required this.artiste,
+    this.artisteTrackingId,
+    this.albumTrackingId,
+    this.categorieTrackingId,
     this.isVip = false,
   });
 
@@ -20,6 +25,9 @@ class SongModel {
       titre: json['titre'] as String? ?? '',
       audio: json['audio'] as String? ?? '',
       artiste: json['artiste'] as String? ?? '',
+      artisteTrackingId: json['artisteTrackingId'] as String?,
+      albumTrackingId: json['albumTrackingId'] as String?,
+      categorieTrackingId: json['categorieTrackingId'] as String?,
       isVip: json['isVip'] as bool? ?? json['vip'] as bool? ?? false,
     );
   }
@@ -29,5 +37,10 @@ class SongModel {
         'titre': titre,
         'audio': audio,
         'artiste': artiste,
+        if (artisteTrackingId != null) 'artisteTrackingId': artisteTrackingId,
+        if (albumTrackingId != null) 'albumTrackingId': albumTrackingId,
+        if (categorieTrackingId != null)
+          'categorieTrackingId': categorieTrackingId,
+        'isVip': isVip,
       };
 }

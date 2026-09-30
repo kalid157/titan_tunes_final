@@ -7,6 +7,10 @@ extension SongModelMapper on SongModel {
         titre: titre,
         audio: audio,
         artiste: artiste,
+        artisteTrackingId: artisteTrackingId,
+        albumTrackingId: albumTrackingId,
+        categorieTrackingId: categorieTrackingId,
+        isVip: isVip,
       );
 }
 
@@ -16,5 +20,9 @@ extension SongEntityMapper on SongEntity {
         titre: titre,
         audio: audio,
         artiste: artiste,
+        artisteTrackingId: artisteTrackingId,
+        albumTrackingId: albumTrackingId,
+        categorieTrackingId: categorieTrackingId,
+        isVip: isVip,
       );
 }

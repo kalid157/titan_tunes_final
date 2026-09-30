@@ -1,7 +1,7 @@
 import 'package:titan_tunes/core/exceptions.dart/exceptions.dart';
 import 'package:titan_tunes/core/exceptions.dart/failures.dart';
 import 'package:titan_tunes/data/datasources/auth_remote_datasource.dart';
-import 'package:titan_tunes/data/mappers/user_mapper.dart';  // ⭐ Le mapper
+import 'package:titan_tunes/data/mappers/user_mapper.dart'; 
 import 'package:titan_tunes/domaine/entities/user_entity.dart';
 import 'package:titan_tunes/domaine/repositories/auth_repository.dart';
 

@@ -100,7 +100,7 @@ class LikeCountNotifier extends Notifier<LikeCountState> {
       await prefs.setString(_keyCounts, jsonEncode(state.counts));
       await prefs.setString(_keyBase, jsonEncode(state.baseCounts));
     } catch (e) {
-      debugPrint('⚠️ Erreur sauvegarde likes: $e');
+      debugPrint(' Erreur sauvegarde likes: $e');
     }
   }
 

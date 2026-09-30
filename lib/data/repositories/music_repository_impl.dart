@@ -26,23 +26,25 @@ class MusicRepositoryImpl implements MusicRepository {
       throw const UnexpectedFailure();
     }
   }
- /*
-  @override
-Future<List<SongEntity>> getSongsByArtist(String artistId) async {
-  try {
-    final models = await _remoteDataSource.getSongsByArtist(artistId);
-    return models.map((m) => m.toEntity()).toList();
-  } on ServerException catch (e) {
-    throw ServerFailure(e.message);
-  } on NetworkException catch (e) {
-    throw NetworkFailure(e.message);
-  }
-}
-*/
+
   @override
   Future<List<SongEntity>> getAllSongs() async {
     try {
       final models = await _remoteDataSource.getAllSongs();
+      return models.map((m) => m.toEntity()).toList();
+    } on ServerException catch (e) {
+      throw ServerFailure(e.message);
+    } on NetworkException catch (e) {
+      throw NetworkFailure(e.message);
+    } catch (_) {
+      throw const UnexpectedFailure();
+    }
+  }
+
+  @override
+  Future<List<SongEntity>> getSongsByAlbum(String albumId) async {
+    try {
+      final models = await _remoteDataSource.getSongsByAlbum(albumId);
       return models.map((m) => m.toEntity()).toList();
     } on ServerException catch (e) {
       throw ServerFailure(e.message);

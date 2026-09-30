@@ -30,7 +30,7 @@ class StripePaymentRepositoryImpl implements PaymentRepository {
     );
   }
 
-  /// ⭐ Utilise PaymentSheet — la méthode recommandée par Stripe
+  ///  Utilise PaymentSheet — la méthode recommandée par Stripe
   /// pour une UX native (carte + 3DS automatique).
   @override
   Future<PaymentResultEntity> confirmPayment({

@@ -1,4 +1,3 @@
-// ⭐ hide RepeatMode — résout le conflit avec Flutter
 import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -28,7 +27,7 @@ class MusicPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: backgroundGrey,
       body: SafeArea(
-        // ⭐ SingleChildScrollView pour éviter l'overflow
+        //  SingleChildScrollView pour éviter l'overflow
         child: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
           child: Padding(
@@ -140,7 +139,7 @@ class MusicPage extends ConsumerWidget {
       child: Container(
         key: ValueKey(state.currentSong?.trackingId ?? 'empty'),
         width: double.infinity,
-        height: 320.h,  // ⭐ Réduit de 340.h à 320.h pour la marge
+        height: 320.h,  //  Réduit de 340.h à 320.h pour la marge
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28.r),
           color: Colors.grey.shade200,
@@ -210,7 +209,7 @@ class MusicPage extends ConsumerWidget {
 
   // ─────────────────────────────────────────────────────────
   // PROGRESSION
-  // ─────────────────────────────────────────────────────────
+ 
   Widget _buildProgressBar(WidgetRef ref, PlayerState state) {
     final total = state.duration.inSeconds.toDouble();
     final current =
@@ -265,26 +264,26 @@ class MusicPage extends ConsumerWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        // ⭐ Bouton répétition
+        //  Bouton répétition
         _buildRepeatButton(ref, state),
 
         // Previous
         IconButton(
           icon: Icon(Icons.skip_previous,
               color: isPreview ? Colors.grey.shade400 : Colors.black87,
-              size: 32.sp),  // ⭐ Réduit de 36.sp à 32.sp
+              size: 32.sp),  //  Réduit de 36.sp à 32.sp
           onPressed: isPreview
               ? null
               : () => ref.read(playerProvider.notifier).previous(),
         ),
 
-        // ⭐ Play/Pause — la logique clé
+        //  Play/Pause — la logique clé
         // En preview : PLAY (pour lancer cette chanson)
         // Sinon : PAUSE si en lecture, PLAY sinon
         GestureDetector(
           onTap: () => ref.read(playerProvider.notifier).togglePlayPause(),
           child: Container(
-            width: 68.w,  // ⭐ Réduit de 72.w à 68.w
+            width: 68.w,  //  Réduit de 72.w à 68.w
             height: 68.w,
             decoration: BoxDecoration(
               color: primaryOrange,
@@ -298,7 +297,7 @@ class MusicPage extends ConsumerWidget {
               ],
             ),
             child: Icon(
-              // ⭐ Si preview → toujours "play"
+              //  Si preview → toujours "play"
               // Sinon → pause si playing, play sinon
               isPreview
                   ? Icons.play_arrow
@@ -315,19 +314,19 @@ class MusicPage extends ConsumerWidget {
         IconButton(
           icon: Icon(Icons.skip_next,
               color: isPreview ? Colors.grey.shade400 : Colors.black87,
-              size: 32.sp),  // ⭐ Réduit
+              size: 32.sp),  //  Réduit
           onPressed: isPreview
               ? null
               : () => ref.read(playerProvider.notifier).next(),
         ),
 
-        // ⭐ Bouton aléatoire
+        //  Bouton aléatoire
         _buildShuffleButton(ref, state),
       ],
     );
   }
 
-  // ⭐ Bouton répétition
+  //  Bouton répétition
   Widget _buildRepeatButton(WidgetRef ref, PlayerState state) {
     final IconData icon;
     final Color color;
@@ -348,7 +347,7 @@ class MusicPage extends ConsumerWidget {
     }
 
     return IconButton(
-      icon: Icon(icon, size: 22.sp, color: color),  // ⭐ Réduit
+      icon: Icon(icon, size: 22.sp, color: color),  //  Réduit
       onPressed: () =>
           ref.read(playerProvider.notifier).cycleRepeatMode(),
       tooltip: switch (state.repeatMode) {
@@ -359,12 +358,12 @@ class MusicPage extends ConsumerWidget {
     );
   }
 
-  // ⭐ Bouton aléatoire
+  //  Bouton aléatoire
   Widget _buildShuffleButton(WidgetRef ref, PlayerState state) {
     return IconButton(
       icon: Icon(
         Icons.shuffle,
-        size: 22.sp,  // ⭐ Réduit
+        size: 22.sp,  //  Réduit
         color: state.shuffleEnabled
             ? primaryOrange
             : Colors.grey.shade600,
@@ -377,9 +376,9 @@ class MusicPage extends ConsumerWidget {
     );
   }
 
-  // ─────────────────────────────────────────────────────────
+  
   // BOUTON LYRICS
-  // ─────────────────────────────────────────────────────────
+  
   Widget _buildLyricsButton(BuildContext context) {
     return GestureDetector(
       onTap: () => context.push('/lyrics_page'),

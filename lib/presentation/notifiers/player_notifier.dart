@@ -10,22 +10,22 @@ enum RepeatMode { off, one, all }
 
 class PlayerState {
   // ═══════════════════════════════════════════════════════════
-  // ⭐ UI FOCUS — ce que l'utilisateur voit / interagit
-  // ═══════════════════════════════════════════════════════════
+  //  UI FOCUS — ce que l'utilisateur voit / interagit
+  
   final SongEntity? currentSong;
   final AlbumEntity? currentAlbum;
 
-  /// ⭐ Playlist affichée dans l'UI (celle de l'album en cours de vue)
+  ///  Playlist affichée dans l'UI (celle de l'album en cours de vue)
   /// Peut être différente de la playlist audio si on prévisualise
   final List<SongEntity> uiPlaylist;
 
   // ═══════════════════════════════════════════════════════════
-  // ⭐ AUDIO STATE — ce qui joue réellement dans just_audio
-  // ═══════════════════════════════════════════════════════════
+  //  AUDIO STATE — ce qui joue réellement dans just_audio
+  // 
   final SongEntity? playingSong;
   final AlbumEntity? playingAlbum;
 
-  /// ⭐ Playlist réellement chargée dans just_audio
+  ///  Playlist réellement chargée dans just_audio
   /// (utilisée pour l'auto-next et le previous/next)
   final List<SongEntity> audioPlaylist;
 
@@ -55,20 +55,20 @@ class PlayerState {
   bool isCurrentSong(SongEntity song) =>
       currentSong?.trackingId == song.trackingId;
 
-  /// ⭐ True si l'UI affiche une chanson DIFFÉRENTE de celle qui joue
+  ///  True si l'UI affiche une chanson DIFFÉRENTE de celle qui joue
   bool get isPreviewOnly {
     if (currentSong == null) return false;
     if (playingSong == null) return true;
     return playingSong!.trackingId != currentSong!.trackingId;
   }
 
-  /// ⭐ True si une musique joue en arrière-plan (même pendant une preview)
+  ///  True si une musique joue en arrière-plan (même pendant une preview)
   bool get hasBackgroundAudio => playingSong != null && isPlaying;
 
-  /// ⭐ Image de la chanson affichée dans l'UI
+  ///  Image de la chanson affichée dans l'UI
   String? get currentImageUrl => currentAlbum?.imageAlbum;
 
-  /// ⭐ Image de la chanson qui joue réellement
+  ///  Image de la chanson qui joue réellement
   String? get playingImageUrl => playingAlbum?.imageAlbum;
 
   PlayerState copyWith({
@@ -114,24 +114,24 @@ class PlayerNotifier extends Notifier<PlayerState> {
   PlayerState build() {
     _player = AudioPlayer();
 
-    // ⭐ Play/pause
+    //  Play/pause
     _player.playerStateStream.listen((s) {
       state = state.copyWith(isPlaying: s.playing);
     });
 
-    // ⭐ Position
+    //  Position
     _player.positionStream.listen((pos) {
       state = state.copyWith(position: pos);
     });
 
-    // ⭐ Durée
+    //  Durée
     _player.durationStream.listen((dur) {
       if (dur != null && dur > Duration.zero) {
         state = state.copyWith(duration: dur);
       }
     });
 
-    // ⭐ Auto-next : utilise `audioPlaylist` (pas `uiPlaylist`)
+    //  Auto-next : utilise `audioPlaylist` (pas `uiPlaylist`)
     _player.currentIndexStream.listen((index) {
       if (index == null) return;
       if (index < 0 || index >= state.audioPlaylist.length) return;
@@ -143,7 +143,7 @@ class PlayerNotifier extends Notifier<PlayerState> {
         currentSong: newSong,
         currentAlbum: album,
         clearAlbum: album == null,
-        uiPlaylist: state.audioPlaylist, // ⭐ synchronise l'UI
+        uiPlaylist: state.audioPlaylist, // synchronise l'UI
         playingSong: newSong,
         playingAlbum: album,
         clearPlayingAlbum: album == null,
@@ -151,7 +151,7 @@ class PlayerNotifier extends Notifier<PlayerState> {
       );
     });
 
-    // ⭐ Sync repeat/shuffle
+    //  Sync repeat/shuffle
     _player.loopModeStream.listen((loopMode) {
       final r = switch (loopMode) {
         LoopMode.off => RepeatMode.off,
@@ -173,17 +173,27 @@ class PlayerNotifier extends Notifier<PlayerState> {
   AlbumEntity? _resolveAlbum(SongEntity song) {
     try {
       final musicState = ref.read(musicNotifierProvider);
+
+     // Priorité 1 : albumTrackingId exact
+    if (song.albumTrackingId != null && song.albumTrackingId!.isNotEmpty) {
       return musicState.albums.firstWhere(
-        (a) => a.nomArtiste.toLowerCase() == song.artiste.toLowerCase(),
+        (a) => a.trackingId == song.albumTrackingId,
       );
+    }
+      // Fallback : premier album de l'artiste
+    return musicState.albums.firstWhere(
+      (a) =>
+          a.nomArtiste.toLowerCase().trim() ==
+          song.artiste.toLowerCase().trim(),
+    );
     } catch (_) {
       return null;
     }
   }
 
   // ═══════════════════════════════════════════════════════════
-  // ⭐ PREVIEW — met à jour l'UI SANS toucher à l'audio
-  // ═══════════════════════════════════════════════════════════
+  //  PREVIEW — met à jour l'UI SANS toucher à l'audio
+  
   void previewSong({
     required SongEntity song,
     List<SongEntity> playlist = const [],
@@ -197,15 +207,15 @@ class PlayerNotifier extends Notifier<PlayerState> {
       currentSong: song,
       currentAlbum: resolvedAlbum,
       clearAlbum: resolvedAlbum == null,
-      // ⭐ Playlist UI = celle de l'album prévisualisé
+      //  Playlist UI = celle de l'album prévisualisé
       // (utilisée si l'utilisateur appuie sur play ensuite)
       uiPlaylist: playlist.isEmpty ? [song] : playlist,
     );
   }
 
   // ═══════════════════════════════════════════════════════════
-  // ⭐ PLAY — joue réellement l'audio
-  // ═══════════════════════════════════════════════════════════
+  //  PLAY — joue réellement l'audio
+  //
   Future<void> playSongInPlaylist({
     required SongEntity song,
     required List<SongEntity> playlist,
@@ -218,7 +228,7 @@ class PlayerNotifier extends Notifier<PlayerState> {
 
       final resolvedAlbum = album ?? _resolveAlbum(song);
 
-      // ⭐ Met à jour UI ET audio en même temps
+      //  Met à jour UI ET audio en même temps
       state = state.copyWith(
         // UI
         currentSong: song,
@@ -255,8 +265,8 @@ class PlayerNotifier extends Notifier<PlayerState> {
   }
 
   // ═══════════════════════════════════════════════════════════
-  // ⭐ Reset le focus sur la chanson qui joue réellement
-  // ═══════════════════════════════════════════════════════════
+  //  Reset le focus sur la chanson qui joue réellement
+  // 
   void focusOnPlayingSong() {
     if (state.playingSong == null) return;
     final album = _resolveAlbum(state.playingSong!);
@@ -269,8 +279,8 @@ class PlayerNotifier extends Notifier<PlayerState> {
   }
 
   // ═══════════════════════════════════════════════════════════
-  // ⭐ Play/Pause intelligent
-  // ═══════════════════════════════════════════════════════════
+  //  Play/Pause intelligent
+  // 
   void togglePlayPause() {
     // Cas 1 : En preview (une autre musique joue, ou rien ne joue)
     if (state.isPreviewOnly && state.currentSong != null) {
@@ -306,7 +316,6 @@ class PlayerNotifier extends Notifier<PlayerState> {
 
   // ═══════════════════════════════════════════════════════════
   // MODES DE LECTURE
-  // ═══════════════════════════════════════════════════════════
 
   /// Cycle : off → all → one → off
   Future<void> cycleRepeatMode() async {

@@ -1,7 +1,7 @@
 enum PaymentStatus {
   pending,
   processing,
-  requiresAction, // ⭐ 3DS / action Stripe
+  requiresAction, //  3DS / action Stripe
   success,
   failed,
   cancelled,

@@ -14,7 +14,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
   Future<UserProfileEntity?> getProfile(String clientId) async {
     try {
       final model = await _remote.getProfile(clientId);
-      // ⭐ Si null (endpoint absent), on remonte null
+      //  Si null (endpoint absent), on remonte null
       return model?.toEntity();
     } on NetworkException catch (e) {
       throw NetworkFailure(e.message);

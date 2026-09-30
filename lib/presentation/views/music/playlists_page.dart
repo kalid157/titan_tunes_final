@@ -165,6 +165,9 @@ void initState() {
  Widget _buildPlaylistList(PlaylistState state) {
   final items = state.displayedItems;
 
+  // ⭐ Ajoute le bouton "Créer" au début (uniquement pour Playlists)
+  final showCreateButton = state.subTab == MusicSubTab.playlists;
+
   if (items.isEmpty) {
     return Center(
       child: Column(
@@ -192,13 +195,58 @@ void initState() {
       await ref.read(playlistNotifierProvider.notifier).loadAll();
     },
     color: primaryOrange,
-    child: ListView.builder(
+    child: ListView(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        final item = items[index];
-        return _buildPlaylistItem(item);
-      },
+      children: [
+        // ⭐ Bouton "Créer une playlist"
+        if (showCreateButton) ...[
+          GestureDetector(
+            onTap: () => context.push('/create_playlist'),
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 16.h),
+              child: Row(
+                children: [
+                  Container(
+                    width: 56.w,
+                    height: 56.h,
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(6.r),
+                    ),
+                    child: Icon(Icons.add,
+                        color: Colors.white, size: 28.sp),
+                  ),
+                  SizedBox(width: 14.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Créer une playlist',
+                          style: TextStyle(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87),
+                        ),
+                        SizedBox(height: 4.h),
+                        Text(
+                          'Ajouter des chansons',
+                          style: TextStyle(
+                              fontSize: 12.sp,
+                              color: Colors.grey.shade600),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+
+        // ⭐ Liste des playlists
+        ...items.map((item) => _buildPlaylistItem(item)).toList(),
+      ],
     ),
   );
 }
@@ -209,7 +257,7 @@ void initState() {
       // ⭐ Navigation selon le type
       switch (item.type) {
         case PlaylistType.liked:
-          context.push('/favorites');
+          context.push('/playlist_detail', extra: item);
           break;
 
         case PlaylistType.album:

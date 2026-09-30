@@ -104,7 +104,61 @@ class PlaylistNotifier extends Notifier<PlaylistState> {
   void setSubTab(MusicSubTab tab) {
     state = state.copyWith(subTab: tab);
   }
+
+  // ⭐ Créer une nouvelle playlist
+Future<bool> createPlaylist({
+  required String titre,
+  required String clientTrackingId,
+  String? imageUrl,
+}) async {
+  state = state.copyWith(isLoading: true, clearError: true);
+  try {
+    final playlist = await ref.read(playlistRepositoryProvider).createPlaylist(
+          titre: titre,
+          clientTrackingId: clientTrackingId,
+          imageUrl: imageUrl,
+        );
+
+    // Ajoute à la liste locale
+    final updated = [playlist, ...state.playlists];
+    state = PlaylistState(
+      playlists: updated,
+      albumPlaylists: state.albumPlaylists,
+      mainTab: state.mainTab,
+      subTab: state.subTab,
+    );
+    return true;
+  } on Failure catch (f) {
+    state = state.copyWith(isLoading: false, error: f.message);
+    return false;
+  } catch (_) {
+    state = state.copyWith(
+      isLoading: false,
+      error: 'Erreur de création',
+    );
+    return false;
+  }
 }
 
-final playlistNotifierProvider =
-    NotifierProvider<PlaylistNotifier, PlaylistState>(() => PlaylistNotifier());
+// ⭐ Ajouter une song à une playlist
+Future<bool> addSongToPlaylist({
+  required String playlistId,
+  required String songId,
+}) async {
+  try {
+    await ref.read(playlistRepositoryProvider).addSongToPlaylist(
+          trackingIdSong: songId,
+          trackingIdPlaylist: playlistId,
+        );
+    return true;
+  } on Failure catch (f) {
+    state = state.copyWith(error: f.message);
+    return false;
+  } catch (_) {
+    state = state.copyWith(error: 'Erreur lors de l\'ajout');
+    return false;
+  }
+}
+}
+
+final playlistNotifierProvider = NotifierProvider<PlaylistNotifier, PlaylistState>(() => PlaylistNotifier());

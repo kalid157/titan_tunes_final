@@ -8,8 +8,8 @@ class FavoriteModel {
     required this.songTrackingId,
   });
 
-  /// ⚠️ Attention : le backend attend "ClientTrackingId" et "SongTrackingId"
-  /// (avec majuscules) — on respecte EXACTEMENT le schéma.
+  
+  ///  schéma du backend :
   Map<String, dynamic> toJson() => {
         'ClientTrackingId': clientTrackingId,
         'SongTrackingId': songTrackingId,

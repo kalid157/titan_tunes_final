@@ -24,6 +24,7 @@ class AppEndpoint {
   static const String _localIp = '192.168.10.103'; // ⬅ CHANGE PAR TA VRAIE IP
 
   ///  URL de base — détectée automatiquement
+  /*
   static String get baseUrl {
     // Override par ligne de commande : --dart-define=API_URL=http://...
     const override = String.fromEnvironment('API_URL');
@@ -42,10 +43,13 @@ class AppEndpoint {
         return 'http://localhost:8081';
     }
   }
+  */
 
   /// URL de base (à remplacer par votre URL Swagger)
    //static const String baseUrl = 'http://192.168.10.103:8081';
   //static const String baseUrl = 'http://10.0.2.2:8081';
+
+  static const String baseUrl = 'https://titan-tune-reset.onrender.com';
 
   // --- AUTH ---
   static const String login = '/user/login';
@@ -75,6 +79,14 @@ class AppEndpoint {
   static const String songs = '/songs';
   static const String artists = '/artists';
 
+  // ⭐ Songs d'un artiste
+  static String songsByArtist(String artistId) =>
+      '/song/getAllForOne/$artistId';
+
+  /// ⭐ Songs d'un album (NOUVEAU — celui que tu m'as montré)
+  static String songsByAlbum(String albumId) =>
+      '/song/getByAlbum/$albumId';
+
   // --- PAYMENT ---
   static const String initPayment = '/payment/mobile-money/initiate';
   static const String confirmPayment = '/payment/mobile-money/confirm';
@@ -83,11 +95,26 @@ class AppEndpoint {
 // --- PLAYLISTS ---
 static const String allPlaylists = '/playlist/all';
 
-// --- SONGS ---
-//static const String allSongs = '/song/getAll';
-static String songsByArtist(String artistId) =>'/song/getAllForOne/$artistId';
+
 //  Quand disponible :
 // static String songsByAlbum(String albumId) => '/song/getAllForAlbum/$albumId';
+
+// --- PLAYLIST ---
+//static const String allPlaylists = '/playlist/all';
+static const String addPlaylist = '/playlist/add';
+static const String addSongToPlaylist = '/playlist/addSong';
+static const String addMultipleSongsToPlaylist = '/playlist/addSongs';
+
+/// Détails d'une playlist
+static String playlistDetails(String id) => '/playlist/$id';
+
+/// Songs d'une playlist
+static String playlistSongs(String id) => '/playlist/$id/songs';
+
+/// Supprimer une playlist
+static String deletePlaylist(String id) => '/playlist/$id';
+
+
 
 // --- FAVORIS ---
 static const String favoris = '/favoris';

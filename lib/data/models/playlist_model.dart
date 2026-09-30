@@ -15,7 +15,7 @@ class PlaylistModel {
     this.type = 'custom',
   });
 
-  /// ⭐ Depuis l'API `/playlist/all`
+  /// Depuis l'API `/playlist/all`
   /// Gère plusieurs formats possibles côté backend.
   factory PlaylistModel.fromJson(Map<String, dynamic> json) {
     return PlaylistModel(

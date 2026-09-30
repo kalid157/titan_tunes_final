@@ -7,6 +7,8 @@ extension AlbumModelMapper on AlbumModel {
         titreAlbum: titreAlbum,
         nomArtiste: nomArtiste,
         imageAlbum: imageAlbum,
+        isVip: isVip,
+        isNew: isNew,
       );
 }
 
@@ -16,5 +18,7 @@ extension AlbumEntityMapper on AlbumEntity {
         titreAlbum: titreAlbum,
         nomArtiste: nomArtiste,
         imageAlbum: imageAlbum,
+        isVip: isVip,
+        isNew: isNew,
       );
 }
